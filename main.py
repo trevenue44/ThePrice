@@ -1,15 +1,15 @@
 import csv
 import sys
 from PyQt5 import QtWidgets, QtGui
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget
+from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
 
 
 class MyWindow(QMainWindow):
     def __init__(self):
         super(MyWindow, self).__init__()
         self.title = "The Price"
-        self.left = 35
-        self.top = 100
+        self.left = 100
+        self.top = 150
         self.width = 640
         self.height = 480
         self.initUI()
@@ -105,7 +105,64 @@ class MyWindow(QMainWindow):
             price_label.show()
 
         if which == 'add':
-            print('add')
+            take_name = QtWidgets.QLineEdit(self)
+            take_name.setGeometry(50, 150, 420, 50)
+            take_name.setFont(QtGui.QFont('Times New Roman', 15))
+            take_name.setPlaceholderText("Name")
+            take_name.setStyleSheet("QLineEdit {border: 1px solid gray;border-radius: 10px;padding-left: 15px; "
+                                    "background-color: rgba(200, 255,255, 1); font: 25px;}")
+
+            take_price = QtWidgets.QLineEdit(self)
+            take_price.setGeometry(485, 150, 125, 50)
+            take_price.setFont(QtGui.QFont('Times New Roman', 15))
+            take_price.setPlaceholderText("Price")
+            take_price.setStyleSheet("QLineEdit {border: 1px solid gray;border-radius: 10px;padding-left: 15px; "
+                                     "background-color: rgba(200, 255,255, 1); font: 25px;}")
+
+            save_button = QtWidgets.QPushButton(self)
+            save_button.setGeometry(270, 240, 125, 50)
+            save_button.setFont(QtGui.QFont('Times New Roman', 15))
+            save_button.setText("Save")
+            save_button.setStyleSheet("QPushButton {margin:1px; padding: 3px; border: 1px solid gray; "
+                                      "border-radius: 20px;background-color: rgba(200, 255, 255, 1); "
+                                      "border-width: 2px;}"
+                                      "QPushButton:hover:!pressed {background-color: rgba(255, 255, 255, 1)}")
+
+            take_name.show()
+            take_price.show()
+            save_button.show()
+
+            def save_clicked():
+                name_to_add = take_name.text()
+                price_to_add = take_price.text()
+
+                message_box = QtWidgets.QMessageBox(self)
+                message_box.setStyleSheet(
+                    "QMessageBox {border: 1px solid gray;border-radius: 10px;padding-left: 15px; "
+                    "background-color: rgba(125, 255,255, 1); font: 25px;}"
+                    "QPushButton {font-size: 20px; background-color: rgba(255, 255,255, 1); border-radius: "
+                    "10px; border: 1px solid gray; padding-left: 20px; padding-right: 20px; padding-top: 5px;"
+                    "padding-bottom: 5px;} "
+                    "QPushButton:hover:!pressed {background-color: rgba(0, 255, 255, 1)}"
+                    "QLabel {background-color: rgba(125, 255,255, 1); font: 25px;}")
+
+                if name_to_add and price_to_add:
+                    with open('data.csv', 'a', newline='') as data_file:
+                        writer = csv.writer(data_file)
+                        writer.writerow([str(name_to_add), str(price_to_add)])
+
+                        message_box.setIcon(QMessageBox.Information)
+                        message_box.setWindowTitle("Success")
+                        message_box.setText("Item and Price added Successfully!")
+                        message_box.setInformativeText(f"Item name: {name_to_add}\nItem Price: ₵ {price_to_add}")
+                        message_box.show()
+                else:
+                    message_box.setIcon(QMessageBox.Critical)
+                    message_box.setWindowTitle("Error")
+                    message_box.setText("Price or Name not inputted")
+                    message_box.show()
+
+            save_button.clicked.connect(save_clicked)
 
 
 if __name__ == "__main__":
