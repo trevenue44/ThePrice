@@ -1,3 +1,4 @@
+import csv
 import sys
 from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget
@@ -14,16 +15,25 @@ class MyWindow(QMainWindow):
         self.initUI()
 
     def initUI(self):
+        self.setStyleSheet("background-color: rgba(170, 255, 255, 1)")
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
 
         self.button1 = QtWidgets.QPushButton(self)
+        self.button1.setStyleSheet("QPushButton {margin:1px; padding: 3px; border: 1px solid gray; "
+                                   "border-radius: 20px;background-color: rgba(200, 255, 255, 1); "
+                                   "border-width: 2px;}"
+                                   "QPushButton:hover:!pressed {background-color: rgba(255, 255, 255, 1)}")
         self.button1.setGeometry(100, 200, 200, 80)
         self.button1.setText("Check Price")
         self.button1.setFont(QtGui.QFont('Arial', 15))
         self.button1.clicked.connect(lambda: self.first_clicked('check'))
 
         self.button2 = QtWidgets.QPushButton(self)
+        self.button2.setStyleSheet("QPushButton {margin:1px; padding: 3px; border: 1px solid gray; "
+                                   "border-radius: 20px;background-color: rgba(200, 255, 255, 1); "
+                                   "border-width: 2px;}"
+                                   "QPushButton:hover:!pressed {background-color: rgba(255, 255, 255, 1)}")
         self.button2.setGeometry(340, 200, 200, 80)
         self.button2.setText("Add Price")
         self.button2.setFont(QtGui.QFont('Arial', 15))
@@ -32,8 +42,68 @@ class MyWindow(QMainWindow):
         self.show()
 
     def first_clicked(self, which):
+        self.button1.deleteLater()
+        self.button2.deleteLater()
+
+        # back = QtWidgets.QPushButton(self)
+        # back.setText("Back")
+        # back.setFont(QtGui.QFont("Times New Roman", 10))
+        # back.show()
+        # back.clicked.connect(MyWindow)
+
         if which == 'check':
-            print('check')
+
+            check_combo = QtWidgets.QComboBox(self)
+            check_combo.setGeometry(50, 150, 420, 50)
+            check_combo.setStyleSheet("QComboBox {border: 1px solid gray;border-radius: 10px;padding-left: 15px; "
+                                      "background-color: rgba(200, 255,255, 1); font: 25px;} "
+                                      "QComboBox:drop-down:!pressed {border: 1px border-radius: 20px;border: 1px solid "
+                                      "gray; padding: 1px;}")
+            check_combo.setFont(QtGui.QFont('Times New Roman', 15))
+            check_combo.setEditable(False)
+
+            submit_button = QtWidgets.QPushButton(self)
+            submit_button.setGeometry(485, 150, 125, 50)
+            submit_button.setStyleSheet("QPushButton {margin:1px; padding: 3px; border: 1px solid gray; "
+                                        "border-radius: 20px;background-color: rgba(200, 255, 255, 1); "
+                                        "border-width: 2px;}"
+                                        "QPushButton:hover:!pressed {background-color: rgba(255, 255, 255, 1)}")
+            submit_button.setText("Check")
+            submit_button.setFont(QtGui.QFont('Times New Roman', 15))
+
+            price_label = QtWidgets.QLabel(self)
+            price_label.setGeometry(230, 240, 200, 50)
+            price_label.setFont(QtGui.QFont("Times New Roman", 15))
+
+            with open('data.csv') as data:
+                reader = enumerate(csv.reader(data))
+                items_list = []
+                for i, row in reader:
+                    if i > 0:
+                        item_name = row[0]
+                        item_price = row[1]
+                        items_list.append([item_name, item_price])
+
+            names = [u[0] for u in items_list]
+            names.sort()
+            check_combo.addItems(names)
+            check_combo.show()
+            submit_button.show()
+
+            def submit_clicked():
+                item_to_check = check_combo.currentText()
+                for item in items_list:
+                    if item[0] == item_to_check:
+                        price_label.setText(f"Price: ₵ {item[1]}")
+                        price_label.setStyleSheet("QLabel {margin:1px; padding: 3px; border: 1px solid gray; "
+                                                  "border-radius: 20px;background-color: rgba(200, 255, 255, 1); "
+                                                  "border-width: 2px;}")
+                        price_label.adjustSize()
+
+            submit_button.clicked.connect(submit_clicked)
+
+            price_label.show()
+
         if which == 'add':
             print('add')
 
